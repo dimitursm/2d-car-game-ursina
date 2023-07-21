@@ -7,8 +7,6 @@ class Car(Entity):
         self.model, self.texture = 'car', 'car_texture'
         self.car = Entity(model=self.model, texture=self.texture, scale=0.3, rotation=(0,0,0))
         self.speed = 4
-        self.deceleration = 0
-        self.acceleration = 0
 
     def input(self, key):
 
@@ -22,17 +20,8 @@ class Car(Entity):
         self.car.x += held_keys['w'] * self.speed * math.sin(self.car.rotation_y*pi/180) * time.dt
         self.car.x -= held_keys['s'] * self.speed * math.sin(self.car.rotation_y*pi/180) * time.dt
 
-        # if self.deceleration < 1:
-        #     self.deceleration += held_keys['s'] * 0.01
-        # if self.acceleration < 1:
-        #     self.acceleration += held_keys['w'] * 0.01
-
-        # if (held_keys['w']+held_keys['s']) == 0:
-
-        #     print(self.car.rotation)
-        #     self.acceleration, self.deceleration = 0, 0
-
         #? flips the rotation of 'a' and 'd' when going backwards
+        #? could add this as a setting
         # if held_keys['s']==1:
         #     self.car.rotation_y -= held_keys['d'] - held_keys['a']
         # else:
