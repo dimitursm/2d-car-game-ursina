@@ -9,7 +9,6 @@ class Car(Entity):
         self.speed = 0
         self.max_speed = 4
         self.dir = 1
-        self.zero = True
 
     def input(self, key):
 
@@ -18,21 +17,25 @@ class Car(Entity):
 
     def update(self):
 
-        if self.speed==0:
-            self.zero = True
+        rotation_in_radians = self.car.rotation_y*pi/180
+        pedal_is_pressed = self.xor(held_keys['w'], held_keys['s'])==1 # only one, not both
+        changing_direction = not self.dir==held_keys['w'] - held_keys['s']
+        max_speed_dropped = self.speed>self.max_speed
+        speed_is_zero = self.speed==0
 
-        self.car.z += self.dir * self.speed * math.cos(self.car.rotation_y*pi/180) * time.dt
-        self.car.x += self.dir * self.speed * math.sin(self.car.rotation_y*pi/180) * time.dt
+        if speed_is_zero:
+            self.dir = held_keys['w'] - held_keys['s']
+
+        self.car.z += self.dir * self.speed * math.cos(rotation_in_radians) * time.dt
+        self.car.x += self.dir * self.speed * math.sin(rotation_in_radians) * time.dt
 
         self.car.rotation_y += self.dir * (held_keys['d'] - held_keys['a'])*self.speed/2
 
-        if (self.xor(held_keys['w'], held_keys['s'])==0 or not self.zero) and not self.dir==held_keys['w'] - held_keys['s']:
+        if not pedal_is_pressed or (not speed_is_zero and changing_direction) or max_speed_dropped:
+            #decrease
             self.speed = max(self.speed - 2*time.dt, 0)
-            self.zero = False
-        elif self.speed>self.max_speed:
-            self.speed = max(self.speed - 2*time.dt, 0)
-        elif self.zero or self.dir==held_keys['w'] - held_keys['s']:
-            self.dir = held_keys['w'] - held_keys['s']
+        else:
+            #increase
             self.speed = min(self.speed + self.xor(held_keys['w'], held_keys['s']) * 2 * time.dt, self.max_speed)
 
     def xor(self, a, b):
