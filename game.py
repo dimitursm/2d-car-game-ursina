@@ -5,7 +5,7 @@ class Car(Entity):
         super().__init__()
 
         self.model, self.texture = 'car', 'car_texture'
-        self.car = Entity(model=self.model, texture=self.texture, scale=0.3, rotation=(0,0,0))
+        self.car = Entity(model=self.model, texture=self.texture, scale=0.6, rotation=(0,0,0), collider='box')
         self.speed = 0
         self.max_speed = 4
         self.dir = 1
@@ -21,6 +21,7 @@ class Car(Entity):
         pedal_is_pressed = self.xor(held_keys['w'], held_keys['s'])==1 # only one, not both
         changing_direction = not self.dir==held_keys['w'] - held_keys['s']
         max_speed_dropped = self.speed>self.max_speed
+        braking = held_keys['left control']==1
         speed_is_zero = self.speed==0
 
         if speed_is_zero:
@@ -30,6 +31,10 @@ class Car(Entity):
         self.car.x += self.dir * self.speed * math.sin(rotation_in_radians) * time.dt
 
         self.car.rotation_y += self.dir * (held_keys['d'] - held_keys['a'])*self.speed/2
+
+        if braking:
+            #rapid decrease
+            self.speed = max(self.speed - 8*time.dt, 0)
 
         if not pedal_is_pressed or (not speed_is_zero and changing_direction) or max_speed_dropped:
             #decrease
@@ -49,15 +54,20 @@ if __name__ == '__main__':
 
     Entity(model='quad', scale=60, rotation=(90,0,0), texture='white_cube', texture_scale=(60, 60),
             color=color.light_gray)
+    
+    # Entity(model=Cone(4), position=(20,0,0), color=color.orange, collider='mesh')
 
+    camera.orthographic = True
     camera.rotation = (90,0,0)
     camera.position = (0,40,0)
 
     car = Car()
 
     speedometer = Text(text=str(car.speed*25), position=(0,0,0), color = color.black)
+    wheel = Entity(model='cube', texture='steering_wheel', position=(-30,0,15), scale=6)
 
     def update():
         speedometer.text = str(math.floor(car.speed*25))
+        wheel.rotation = (0, car.rot, 0)
 
     app.run()
