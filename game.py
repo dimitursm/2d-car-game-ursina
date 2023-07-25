@@ -9,6 +9,7 @@ class Car(Entity):
         self.speed = 0
         self.max_speed = 4
         self.dir = 1
+        self.rot = 0
 
     def input(self, key):
 
@@ -30,7 +31,11 @@ class Car(Entity):
         self.car.z += self.dir * self.speed * math.cos(rotation_in_radians) * time.dt
         self.car.x += self.dir * self.speed * math.sin(rotation_in_radians) * time.dt
 
-        self.car.rotation_y += self.dir * (held_keys['d'] - held_keys['a'])*self.speed/2
+        self.rot =  min(max(self.rot + (held_keys['d'] - held_keys['a'])*2, -135), 135)
+                                                                            # too much?
+
+        self.car.rotation_y += self.dir * self.rot * self.speed/self.max_speed * time.dt
+                                                    # glitch when shifting gear
 
         if braking:
             #rapid decrease
