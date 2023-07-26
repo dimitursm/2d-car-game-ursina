@@ -19,11 +19,13 @@ class Car(Entity):
     def update(self):
 
         rotation_in_radians = self.car.rotation_y*pi/180
+        speed_is_zero = self.speed==0
+        turning = max(held_keys['d'], held_keys['a'])==1
+        low_speed = self.speed < 4
+        braking = held_keys['left control']==1
         pedal_is_pressed = self.xor(held_keys['w'], held_keys['s'])==1 # only one, not both
         changing_direction = not self.dir==held_keys['w'] - held_keys['s']
         max_speed_dropped = self.speed>self.max_speed
-        braking = held_keys['left control']==1
-        speed_is_zero = self.speed==0
 
         if speed_is_zero:
             self.dir = held_keys['w'] - held_keys['s']
@@ -31,11 +33,20 @@ class Car(Entity):
         self.car.z += self.dir * self.speed * math.cos(rotation_in_radians) * time.dt
         self.car.x += self.dir * self.speed * math.sin(rotation_in_radians) * time.dt
 
-        self.rot =  min(max(self.rot + (held_keys['d'] - held_keys['a'])*2, -135), 135)
-                                                                            # too much?
+        if turning:
+            self.rot =  min(max(self.rot + (held_keys['d'] - held_keys['a'])*2, -120), 120)
+        else:
+            if self.rot > 0:
+                self.rot = max(self.rot - 128*time.dt, 0)
+            else:
+                self.rot = min(self.rot + 128*time.dt, 0)
 
-        self.car.rotation_y += self.dir * self.rot * self.speed/self.max_speed * time.dt
-                                                    # glitch when shifting gear
+        if low_speed:
+            #turn steadily
+            self.car.rotation_y += self.dir * self.rot * self.speed/4 * time.dt
+        else:
+            #turn normally
+            self.car.rotation_y += self.dir * self.rot * time.dt
 
         if braking:
             #rapid decrease
