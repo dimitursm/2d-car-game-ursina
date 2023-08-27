@@ -26,6 +26,7 @@ if __name__ == '__main__':
     car.speed = 0
     car.max_speed = 4
     car.dir = 1
+    car.last_dir = 1
     car.rot = 0
 
     speedometer = Text(text=str(car.speed*25), position=(0,0,0), color = color.black)
@@ -49,14 +50,18 @@ if __name__ == '__main__':
         pedal_is_pressed = xor(held_keys['w'], held_keys['s'])==1 # only one, not both
         changing_direction = not car.dir==held_keys['w'] - held_keys['s']
         max_speed_dropped = car.speed>car.max_speed
-        
+
         if speed_is_zero:
+
             car.dir = held_keys['w'] - held_keys['s']
+
+        if pedal_is_pressed:
+            car.last_dir = car.dir
 
         if crashed:
             car.speed = 0
-            car.z -= car.dir * math.cos(rotation_in_radians) * time.dt
-            car.x -= car.dir * math.sin(rotation_in_radians) * time.dt
+            car.z -= car.last_dir * math.cos(rotation_in_radians) * time.dt
+            car.x -= car.last_dir * math.sin(rotation_in_radians) * time.dt
 
         car.z += car.dir * car.speed * math.cos(rotation_in_radians) * time.dt
         car.x += car.dir * car.speed * math.sin(rotation_in_radians) * time.dt
