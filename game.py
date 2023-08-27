@@ -36,9 +36,8 @@ if __name__ == '__main__':
         speedometer.text = str(math.floor(car.speed*25))
         wheel.rotation = (0, car.rot, 0)
 
-        stop = car.intersects()
-        print(stop)
         speed_is_zero = car.speed==0
+        crashed = car.intersects()
         rotation_in_radians = car.rotation_y*pi/180
         turning = max(held_keys['d'], held_keys['a'])==1
         low_speed = car.speed < 4
@@ -50,9 +49,13 @@ if __name__ == '__main__':
         if speed_is_zero:
             car.dir = held_keys['w'] - held_keys['s']
 
-        if not stop:
-            car.z += car.dir * car.speed * math.cos(rotation_in_radians) * time.dt
-            car.x += car.dir * car.speed * math.sin(rotation_in_radians) * time.dt
+        if crashed:
+            car.speed = 0
+            car.z -= car.dir * math.cos(rotation_in_radians) * time.dt
+            car.x -= car.dir * math.sin(rotation_in_radians) * time.dt
+
+        car.z += car.dir * car.speed * math.cos(rotation_in_radians) * time.dt
+        car.x += car.dir * car.speed * math.sin(rotation_in_radians) * time.dt
 
         if turning:
             car.rot =  min(max(car.rot + (held_keys['d'] - held_keys['a'])*2, -120), 120)
@@ -62,7 +65,7 @@ if __name__ == '__main__':
             else:
                 car.rot = min(car.rot + 128*time.dt, 0)
 
-        if not stop:
+        if not crashed:
             if low_speed:
                 #turn steadily
                 car.rotation_y += car.dir * car.rot * car.speed/4 * time.dt
