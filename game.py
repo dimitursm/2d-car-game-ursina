@@ -12,6 +12,10 @@ if __name__ == '__main__':
             color=color.light_gray)
     
     box = Entity(model='cube', position=(20,0,0), color=color.orange, collider='mesh')
+    wall1 = Entity(model='cube', scale_z=40, position=(30,0,0), color=color.gray, collider='mesh')
+    wall2 = Entity(model='cube', scale_z=40, position=(-30,0,0), color=color.gray, collider='mesh')
+    wall3 = Entity(model='cube', scale_x=60, position=(0,0,20), color=color.gray, collider='mesh')
+    wall4 = Entity(model='cube', scale_x=60, position=(0,0,-20), color=color.gray, collider='mesh')
 
     camera.orthographic = True
     camera.rotation = (90,0,0)
