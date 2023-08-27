@@ -25,7 +25,7 @@ if __name__ == '__main__':
     car.rot = 0
 
     speedometer = Text(text=str(car.speed*25), position=(0,0,0), color = color.black)
-    wheel = Entity(model='cube', texture='steering_wheel', position=(-30,0,15), scale=6)
+    wheel = Entity(model='cube', texture='steering_wheel', position=(0,0,16), scale=6)
 
     def input(key):
 
